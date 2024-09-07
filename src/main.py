@@ -2,6 +2,7 @@ from util import Util, BACKGROUND_COLOR
 from tkinter import *
 from PIL import ImageTk, Image
 import json
+import random
 
 # starting menu
 root = Tk()
@@ -11,6 +12,8 @@ root.config(bg=BACKGROUND_COLOR)
 
 add_topic_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
 
+current_topic_display = []
+    
 class App:
     # type your topics
     def create_topic_window(request: str):
@@ -31,19 +34,61 @@ class App:
     def add_topic(request: str,
                   topic_entry):
         with open("../data/topic.json", "r") as file:
-            topic_example = json.load(file)
+            topic_list = json.load(file)
         
-        topic_example[request].append(topic_entry.get("1.0", END))
+        # gets the topic entered and saves it into topic.json
+        topic_list[request].append(topic_entry.get("1.0", END))
         
         with open("../data/topic.json", "w") as file:
-            json.dump(topic_example, file, indent=4, sort_keys=True)
+            json.dump(topic_list, file, indent=4, sort_keys=True)
         
         topic_entry.delete("0.0", END)
+        
+    def create_reminder_window():
+        reminder_window = Toplevel()
+        reminder_window.geometry("480x840")
+        reminder_window.config(bg=BACKGROUND_COLOR)
+        
+        App.display_reminder(reminder_window)
+        
+    def display_reminder(window):
+        if window.winfo_exists():
+            with open("../data/topic.json", "r") as file:
+                topic_list = json.load(file)
+            
+            # chooses a random reminder from topic.json
+            while True:
+                random_reminder = random.choice(topic_list["topic"])
+                
+                # avoids displaying repeated topics
+                if random_reminder not in current_topic_display:
+                    current_topic_display.append(random_reminder)
+                    break
+            
+            reminder_frame = Util.create_frame(window)
+            reminder_frame.pack()
+            
+            # creates a random tag (variable)
+            random_reminder_tag = "".join([random.choice("1234567890") for tag in range(6)])
+            
+            random_reminder_tag = Util.create_label(reminder_frame)
+            random_reminder_tag.config(text=random_reminder)
+            random_reminder_tag.pack()
+            
+            if len(current_topic_display) < len(topic_list["topic"]):
+                root.after(3000, App.display_reminder, window)
 
 topic_button = Util.create_button(root)
-topic_button.config(text="add topic",
+topic_button.config(image=add_topic_image,
                     command=lambda: App.create_topic_window("topic"))
-topic_button.pack()
+topic_button.place(anchor=CENTER,
+                   relx=0.5,
+                   rely=0.5)
+
+start_button = Util.create_button(root)
+start_button.config(image=add_topic_image,
+                    command=lambda: App.create_reminder_window())
+start_button.pack(side=BOTTOM)
 
 if __name__ == "__main__":
     root.mainloop()
