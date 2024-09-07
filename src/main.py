@@ -43,7 +43,8 @@ class App:
             json.dump(topic_list, file, indent=4, sort_keys=True)
         
         topic_entry.delete("0.0", END)
-        
+    
+    # window for displaying the reminders
     def create_reminder_window():
         reminder_window = Toplevel()
         reminder_window.geometry("480x840")
@@ -65,18 +66,42 @@ class App:
                     current_topic_display.append(random_reminder)
                     break
             
-            reminder_frame = Util.create_frame(window)
-            reminder_frame.pack()
-            
             # creates a random tag (variable)
             random_reminder_tag = "".join([random.choice("1234567890") for tag in range(6)])
+            
+            reminder_frame = Util.create_frame(window)
+            reminder_frame.pack()
             
             random_reminder_tag = Util.create_label(reminder_frame)
             random_reminder_tag.config(text=random_reminder)
             random_reminder_tag.pack()
             
+            # hovering makes the approve/decline buttons appear
+            reminder_frame.bind("<Enter>", lambda e: App.toggle_reminder_option_button(e, reminder_frame, True))
+            # otherwise, makes them disappear
+            reminder_frame.bind("<Leave>", lambda e: App.toggle_reminder_option_button(e, reminder_frame, False))
+            
             if len(current_topic_display) < len(topic_list["topic"]):
                 root.after(3000, App.display_reminder, window)
+    
+    # toggles approve/decline buttons below a reminder
+    def toggle_reminder_option_button(e,
+                                      frame,
+                                      active: bool):
+        if not hasattr(frame, "approve_button"):
+            frame.approve_button = Util.create_button(frame)
+            frame.approve_button.config(image=add_topic_image, command=lambda: print("approve"))
+        
+        if not hasattr(frame, "decline_button"):
+            frame.decline_button = Util.create_button(frame)
+            frame.decline_button.config(image=add_topic_image, command=lambda: print("decline"))
+
+        if active:
+            frame.approve_button.pack(side=LEFT)
+            frame.decline_button.pack()
+        else:
+            frame.approve_button.pack_forget()
+            frame.decline_button.pack_forget()
 
 topic_button = Util.create_button(root)
 topic_button.config(image=add_topic_image,
