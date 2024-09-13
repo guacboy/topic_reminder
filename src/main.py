@@ -11,6 +11,10 @@ root.geometry("480x540")
 root.config(bg=BACKGROUND_COLOR)
 
 add_topic_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
+add_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
+start_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
+done_image = ImageTk.PhotoImage(Image.open("assets/done-button.png"))
+skip_image = ImageTk.PhotoImage(Image.open("assets/skip-button.png"))
 
 current_reminder_list = []
     
@@ -86,23 +90,23 @@ class App:
                                       reminder_frame: str,
                                       reminder_label,
                                       is_active: bool):
-        if not hasattr(reminder_frame, "skip_button"):
-            reminder_frame.skip_button = Util.create_button(reminder_frame)
-            reminder_frame.skip_button.config(image=add_topic_image,
-                                              command=lambda: modify_json_file(reminder_label, False))
-        
         if not hasattr(reminder_frame, "done_button"):
             reminder_frame.done_button = Util.create_button(reminder_frame)
-            reminder_frame.done_button.config(image=add_topic_image,
+            reminder_frame.done_button.config(image=done_image,
                                               command=lambda: modify_json_file(reminder_label, True))
+            
+        if not hasattr(reminder_frame, "skip_button"):
+            reminder_frame.skip_button = Util.create_button(reminder_frame)
+            reminder_frame.skip_button.config(image=skip_image,
+                                              command=lambda: modify_json_file(reminder_label, False))
 
         # checks if cursor is hovering over frame
         if is_active:
-            reminder_frame.skip_button.pack(side=LEFT)
-            reminder_frame.done_button.pack()
+            reminder_frame.done_button.pack(side=LEFT)
+            reminder_frame.skip_button.pack()
         else:
-            reminder_frame.skip_button.pack_forget()
             reminder_frame.done_button.pack_forget()
+            reminder_frame.skip_button.pack_forget()
         
         def modify_json_file(reminder_label,
                              is_delete: bool):
