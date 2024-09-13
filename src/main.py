@@ -106,6 +106,14 @@ class App:
                                               command=lambda: modify_json_file(reminder_label, False))
             reminder_frame.skip_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "skip_button", True))
             reminder_frame.skip_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "skip_button", False))
+
+        # checks if cursor is hovering over frame
+        if is_active:
+            reminder_frame.done_button.pack(side=LEFT)
+            reminder_frame.skip_button.pack()
+        else:
+            reminder_frame.done_button.pack_forget()
+            reminder_frame.skip_button.pack_forget()
         
         # toggles button-hover effect
         def toggle_hover_effect(e,
@@ -119,14 +127,6 @@ class App:
             else:
                 reminder_frame.done_button.config(image=done_image)
                 reminder_frame.skip_button.config(image=skip_image)
-
-        # checks if cursor is hovering over frame
-        if is_active:
-            reminder_frame.done_button.pack(side=LEFT)
-            reminder_frame.skip_button.pack()
-        else:
-            reminder_frame.done_button.pack_forget()
-            reminder_frame.skip_button.pack_forget()
         
         def modify_json_file(reminder_label,
                              is_delete: bool) -> None:

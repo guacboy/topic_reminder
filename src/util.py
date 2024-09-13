@@ -17,7 +17,8 @@ class Util:
         return Label(window,
                      bg=BACKGROUND_COLOR,
                      fg=FONT_COLOR,
-                     font=FONT_TYPE)
+                     font=FONT_TYPE,
+                     wraplength=450)
     
     def create_text(window) -> Text:
         return Text(window,
