@@ -14,13 +14,15 @@ add_topic_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
 add_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
 start_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
 done_image = ImageTk.PhotoImage(Image.open("assets/done-button.png"))
+done_hover_image = ImageTk.PhotoImage(Image.open("assets/done-button-hover.png"))
 skip_image = ImageTk.PhotoImage(Image.open("assets/skip-button.png"))
+skip_hover_image = ImageTk.PhotoImage(Image.open("assets/skip-button-hover.png"))
 
 current_reminder_list = []
     
 class App:
     # type your topics
-    def create_topic_window():
+    def create_topic_window() -> None:
         topic_window = Toplevel()
         topic_window.geometry("480x440")
         topic_window.config(bg=BACKGROUND_COLOR)
@@ -34,7 +36,7 @@ class App:
         add_topic_button.pack()
     
     # adds the inserted topic into topic.json
-    def add_topic(topic_entry):
+    def add_topic(topic_entry) -> None:
         with open("../data/topic.json", "r") as file:
             topic_list = json.load(file)
             
@@ -47,7 +49,7 @@ class App:
         topic_entry.delete("0.0", END)
     
     # window for displaying the reminders
-    def create_reminder_window():
+    def create_reminder_window() -> None:
         reminder_window = Toplevel()
         reminder_window.geometry("480x840")
         reminder_window.config(bg=BACKGROUND_COLOR)
@@ -56,7 +58,7 @@ class App:
         current_reminder_list.clear()
         App.display_reminder(reminder_window)
         
-    def display_reminder(window):
+    def display_reminder(window) -> None:
         if window.winfo_exists():
             with open("../data/topic.json", "r") as file:
                 topic_list = json.load(file)
@@ -89,16 +91,34 @@ class App:
     def toggle_reminder_option_button(e,
                                       reminder_frame: str,
                                       reminder_label,
-                                      is_active: bool):
+                                      is_active: bool) -> None:
+        # if object does not exist, creates object
         if not hasattr(reminder_frame, "done_button"):
             reminder_frame.done_button = Util.create_button(reminder_frame)
             reminder_frame.done_button.config(image=done_image,
                                               command=lambda: modify_json_file(reminder_label, True))
+            reminder_frame.done_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "done_button", True))
+            reminder_frame.done_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "done_button", False))
             
         if not hasattr(reminder_frame, "skip_button"):
             reminder_frame.skip_button = Util.create_button(reminder_frame)
             reminder_frame.skip_button.config(image=skip_image,
                                               command=lambda: modify_json_file(reminder_label, False))
+            reminder_frame.skip_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "skip_button", True))
+            reminder_frame.skip_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "skip_button", False))
+        
+        # toggles button-hover effect
+        def toggle_hover_effect(e,
+                                button: str,
+                                is_hover: bool) -> None:
+            if is_hover:
+                if button == "done_button":
+                    reminder_frame.done_button.config(image=done_hover_image)
+                elif button == "skip_button":
+                    reminder_frame.skip_button.config(image=skip_hover_image)
+            else:
+                reminder_frame.done_button.config(image=done_image)
+                reminder_frame.skip_button.config(image=skip_image)
 
         # checks if cursor is hovering over frame
         if is_active:
@@ -109,7 +129,7 @@ class App:
             reminder_frame.skip_button.pack_forget()
         
         def modify_json_file(reminder_label,
-                             is_delete: bool):
+                             is_delete: bool) -> None:
             reminder_frame.pack_forget()
             
             if is_delete:
