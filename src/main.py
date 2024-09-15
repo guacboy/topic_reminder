@@ -7,7 +7,7 @@ import random
 # starting menu
 root = Tk()
 root.title("Topic Reminder")
-root.geometry("480x540")
+root.geometry("480x340")
 root.config(bg=BACKGROUND_COLOR)
 
 add_topic_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
@@ -179,23 +179,20 @@ title_label.pack(pady=(20, 0))
 topic_button = Util.create_button(root)
 topic_button.config(image=add_topic_image,
                     command=lambda: App.create_topic_window())
-topic_button.place(anchor=CENTER,
-                   relx=0.5,
-                   rely=0.5)
+topic_button.pack(pady=(50, 0))
 
 # creates the topic list button where you can view your topics
 topic_button = Util.create_button(root)
 topic_button.config(image=add_topic_image,
                     command=lambda: App.create_reminder_window(True))
-topic_button.place(anchor=CENTER,
-                   relx=0.5,
-                   rely=0.6)
+topic_button.pack(pady=(10, 0))
 
 # creates the start button
 start_button = Util.create_button(root)
 start_button.config(image=add_topic_image,
                     command=lambda: App.create_reminder_window(False))
-start_button.pack(side=BOTTOM)
+start_button.pack(side=BOTTOM,
+                  pady=(0, 20))
 
 if __name__ == "__main__":
     root.mainloop()
