@@ -73,7 +73,7 @@ class App:
                     break
             
             reminder_frame = Util.create_frame(window)
-            reminder_frame.pack()
+            reminder_frame.pack(fill="x")
             
             reminder_label = Util.create_label(reminder_frame)
             reminder_label.config(text=reminder)
@@ -93,27 +93,35 @@ class App:
                                       reminder_label,
                                       is_active: bool) -> None:
         # if object does not exist, creates object
-        if not hasattr(reminder_frame, "done_button"):
-            reminder_frame.done_button = Util.create_button(reminder_frame)
-            reminder_frame.done_button.config(image=done_image,
+        
+        # creates an option_frame within a reminder_frame to allow the
+        # options to always be below and center of the labels
+        if not hasattr(reminder_frame, "option_frame"):
+            reminder_frame.option_frame = Util.create_frame(reminder_frame)
+        
+        # creates "done" button
+        if not hasattr(reminder_frame.option_frame, "done_button"):
+            reminder_frame.option_frame.done_button = Util.create_button(reminder_frame.option_frame)
+            reminder_frame.option_frame.done_button.config(image=done_image,
                                               command=lambda: modify_json_file(reminder_label, True))
-            reminder_frame.done_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "done_button", True))
-            reminder_frame.done_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "done_button", False))
+            reminder_frame.option_frame.done_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "done_button", True))
+            reminder_frame.option_frame.done_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "done_button", False))
             
-        if not hasattr(reminder_frame, "skip_button"):
-            reminder_frame.skip_button = Util.create_button(reminder_frame)
-            reminder_frame.skip_button.config(image=skip_image,
+        # creates "skip" button
+        if not hasattr(reminder_frame.option_frame, "skip_button"):
+            reminder_frame.option_frame.skip_button = Util.create_button(reminder_frame.option_frame)
+            reminder_frame.option_frame.skip_button.config(image=skip_image,
                                               command=lambda: modify_json_file(reminder_label, False))
-            reminder_frame.skip_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "skip_button", True))
-            reminder_frame.skip_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "skip_button", False))
+            reminder_frame.option_frame.skip_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "skip_button", True))
+            reminder_frame.option_frame.skip_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "skip_button", False))
 
         # checks if cursor is hovering over frame
         if is_active:
-            reminder_frame.done_button.pack(side=LEFT)
-            reminder_frame.skip_button.pack()
+            reminder_frame.option_frame.done_button.pack(side=LEFT)
+            reminder_frame.option_frame.skip_button.pack()
+            reminder_frame.option_frame.pack()
         else:
-            reminder_frame.done_button.pack_forget()
-            reminder_frame.skip_button.pack_forget()
+            reminder_frame.option_frame.pack_forget()
         
         # toggles button-hover effect
         def toggle_hover_effect(e,
@@ -121,12 +129,12 @@ class App:
                                 is_hover: bool) -> None:
             if is_hover:
                 if button == "done_button":
-                    reminder_frame.done_button.config(image=done_hover_image)
+                    reminder_frame.option_frame.done_button.config(image=done_hover_image)
                 elif button == "skip_button":
-                    reminder_frame.skip_button.config(image=skip_hover_image)
+                    reminder_frame.option_frame.skip_button.config(image=skip_hover_image)
             else:
-                reminder_frame.done_button.config(image=done_image)
-                reminder_frame.skip_button.config(image=skip_image)
+                reminder_frame.option_frame.done_button.config(image=done_image)
+                reminder_frame.option_frame.skip_button.config(image=skip_image)
         
         def modify_json_file(reminder_label,
                              is_delete: bool) -> None:
