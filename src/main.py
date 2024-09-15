@@ -1,4 +1,4 @@
-from util import Util, BACKGROUND_COLOR
+from util import Util, BACKGROUND_COLOR, FONT_TYPE
 from tkinter import *
 from PIL import ImageTk, Image
 import json
@@ -150,6 +150,13 @@ class App:
                 with open("../data/topic.json", "w") as file:
                     json.dump(topic_list, file, indent=4, sort_keys=True)
 
+# title
+title_label = Util.create_label(root)
+title_label.config(text="Topic Reminder",
+                   font=(FONT_TYPE, 25))
+title_label.pack(pady=(20, 0))
+
+# creates the topic button where you can insert your topics
 topic_button = Util.create_button(root)
 topic_button.config(image=add_topic_image,
                     command=lambda: App.create_topic_window())
@@ -157,6 +164,7 @@ topic_button.place(anchor=CENTER,
                    relx=0.5,
                    rely=0.5)
 
+# creates the start button
 start_button = Util.create_button(root)
 start_button.config(image=add_topic_image,
                     command=lambda: App.create_reminder_window())
