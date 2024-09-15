@@ -49,29 +49,43 @@ class App:
         topic_entry.delete("0.0", END)
     
     # window for displaying the reminders
-    def create_reminder_window() -> None:
+    def create_reminder_window(is_topic_list: bool) -> None:
         reminder_window = Toplevel()
         reminder_window.geometry("480x840")
         reminder_window.config(bg=BACKGROUND_COLOR)
         
         # ensures the current topics displayed is reset
         current_reminder_list.clear()
-        App.display_reminder(reminder_window)
+        App.display_reminder(reminder_window,
+                             is_topic_list)
         
-    def display_reminder(window) -> None:
+    def display_reminder(window,
+                         is_topic_list: bool) -> None:
         if window.winfo_exists():
+            
             with open("../data/topic.json", "r") as file:
                 topic_list = json.load(file)
             
-            # chooses a random reminder from topic.json
             while True:
-                reminder = random.choice(topic_list["topic"])
-                
-                # avoids displaying repeated topics
-                if reminder not in current_reminder_list:
-                    current_reminder_list.append(reminder)
+                # checks to display out of order (general) or in order (topic list)
+                if is_topic_list:
+                    # probably O(n!) but it works
+                    for topic in topic_list["topic"]:
+                        reminder = topic
+                        if reminder not in current_reminder_list:
+                            current_reminder_list.append(reminder)
+                            break
                     break
-            
+                else:
+                    # chooses a random reminder from topic.json
+                    reminder = random.choice(topic_list["topic"])
+                    
+                    # avoids displaying repeated topics
+                    if reminder not in current_reminder_list:
+                        current_reminder_list.append(reminder)
+                        break
+                    
+            # creates a frame to group the reminder label and button options
             reminder_frame = Util.create_frame(window)
             reminder_frame.pack(fill="x")
             
@@ -85,7 +99,12 @@ class App:
             reminder_frame.bind("<Leave>", lambda e: App.toggle_reminder_option_button(e, reminder_frame, reminder_label, False))
             
             if len(current_reminder_list) < len(topic_list["topic"]):
-                root.after(2000, App.display_reminder, window)
+                delay = 2000
+                
+                if is_topic_list:
+                    delay = 0
+                
+                root.after(delay, App.display_reminder, window, is_topic_list)
     
     # toggles done/skip buttons below a reminder
     def toggle_reminder_option_button(e,
@@ -164,10 +183,18 @@ topic_button.place(anchor=CENTER,
                    relx=0.5,
                    rely=0.5)
 
+# creates the topic list button where you can view your topics
+topic_button = Util.create_button(root)
+topic_button.config(image=add_topic_image,
+                    command=lambda: App.create_reminder_window(True))
+topic_button.place(anchor=CENTER,
+                   relx=0.5,
+                   rely=0.6)
+
 # creates the start button
 start_button = Util.create_button(root)
 start_button.config(image=add_topic_image,
-                    command=lambda: App.create_reminder_window())
+                    command=lambda: App.create_reminder_window(False))
 start_button.pack(side=BOTTOM)
 
 if __name__ == "__main__":
