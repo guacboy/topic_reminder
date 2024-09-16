@@ -7,7 +7,7 @@ import random
 # starting menu
 root = Tk()
 root.title("Topic Reminder")
-root.geometry("480x340")
+root.geometry("480x290")
 root.config(bg=BACKGROUND_COLOR)
 
 # main menu options
@@ -52,7 +52,7 @@ class App:
         global topic_window
         
         topic_window = Toplevel()
-        topic_window.geometry("480x440")
+        topic_window.geometry("480x380")
         topic_window.config(bg=BACKGROUND_COLOR)
         
         topic_entry = Util.create_text(topic_window)
@@ -63,7 +63,7 @@ class App:
                                 command=lambda: App.add_topic(topic_entry))
         add_topic_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, add_topic_button, add_topic_image, True))
         add_topic_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, add_topic_button, add_topic_image, False))
-        add_topic_button.pack()
+        add_topic_button.pack(pady=(10, 0))
         
         # differentiates between standard topic window vs edit window
         if reminder_label != None:
@@ -260,7 +260,7 @@ new_topic_button.config(image=new_topic_image,
                         command=lambda: App.create_topic_window(None, None, False))
 new_topic_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, new_topic_button, new_topic_image, True))
 new_topic_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, new_topic_button, new_topic_image, False))
-new_topic_button.pack(pady=(50, 0))
+new_topic_button.pack(pady=(20, 0))
 
 # creates the view topic button where you can view your topics
 view_topic_button = Util.create_button(root)
