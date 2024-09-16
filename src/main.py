@@ -47,8 +47,8 @@ current_reminder_list = []
     
 class App:
     # type your topics
-    def create_topic_window(reminder_frame,
-                            reminder_label,
+    def create_topic_window(reminder_frame: Frame,
+                            reminder_label: Label,
                             is_edit: bool) -> None:
         global topic_window
         
@@ -80,7 +80,7 @@ class App:
             done_edit_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, done_edit_button, done_edit_image, False))
     
     # adds the inserted topic into topic.json
-    def add_topic(topic_entry) -> None:
+    def add_topic(topic_entry: Text) -> None:
         with open("../data/topic.json", "r") as file:
             topic_list = json.load(file)
             
@@ -92,9 +92,9 @@ class App:
         
         topic_entry.delete("0.0", END)
     
-    def edit_topic(reminder_frame,
-                   reminder_label,
-                   topic_entry,
+    def edit_topic(reminder_frame: Frame,
+                   reminder_label: Label,
+                   topic_entry: Text,
                    is_edit: bool) -> None:
         with open("../data/topic.json", "r") as file:
             topic_list = json.load(file)
@@ -183,8 +183,8 @@ class App:
     
     # toggles done/skip buttons below a reminder
     def toggle_reminder_option_button(e,
-                                      reminder_frame: str,
-                                      reminder_label,
+                                      reminder_frame: Frame,
+                                      reminder_label: Label,
                                       is_active: bool) -> None:
         # if object does not exist, creates object
         
@@ -252,8 +252,8 @@ class App:
     
     # toggles button-hover effect 
     def toggle_hover_effect(e,
-                            button,
-                            image_type,
+                            button: Button,
+                            image_type: PhotoImage,
                             is_hover: bool) -> None:
             if is_hover:
                 button.config(image=image_dict[image_type])
