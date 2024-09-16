@@ -1,5 +1,6 @@
 from util import Util, BACKGROUND_COLOR, FONT_TYPE
 from tkinter import *
+from tkinter import messagebox
 from PIL import ImageTk, Image
 import json
 import random
@@ -113,15 +114,26 @@ class App:
     
     # window for displaying the reminders
     def create_reminder_window(is_view_topic: bool) -> None:
-        global reminder_window
+        # displays an error if there aren't any topics in topic.json
+        def show_error() -> None:
+            messagebox.showerror("NO TOPICS FOUND", "Please add at least one topic.")
+            new_topic_button.invoke()
+            
+        with open("../data/topic.json", "r") as file:
+            topic_list = json.load(file)
         
-        reminder_window = Toplevel()
-        reminder_window.geometry("480x840")
-        reminder_window.config(bg=BACKGROUND_COLOR)
-        
-        # ensures the current topics displayed is reset
-        current_reminder_list.clear()
-        App.display_reminder(is_view_topic)
+        if len(topic_list["topic"]) > 0:
+            global reminder_window
+            
+            reminder_window = Toplevel()
+            reminder_window.geometry("480x840")
+            reminder_window.config(bg=BACKGROUND_COLOR)
+            
+            # ensures the current topics displayed is reset
+            current_reminder_list.clear()
+            App.display_reminder(is_view_topic)
+        else:
+            show_error()
         
     def display_reminder(is_view_topic: bool) -> None:
         if reminder_window.winfo_exists():
@@ -154,7 +166,7 @@ class App:
             reminder_label = Util.create_label(reminder_frame)
             reminder_label.config(text=reminder)
             reminder_label.pack()
-            
+        
             # hovering makes the done/skip buttons appear
             reminder_frame.bind("<Enter>", lambda e: App.toggle_reminder_option_button(e, reminder_frame, reminder_label, True))
             # otherwise, makes them disappear
@@ -166,7 +178,7 @@ class App:
                 # changes delay if showing the list of topics
                 if is_view_topic:
                     delay = 0
-                
+                    
                 root.after(delay, App.display_reminder, is_view_topic)
     
     # toggles done/skip buttons below a reminder
