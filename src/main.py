@@ -161,7 +161,7 @@ class App:
             reminder_frame.bind("<Leave>", lambda e: App.toggle_reminder_option_button(e, reminder_frame, reminder_label, False))
             
             if len(current_reminder_list) < len(topic_list["topic"]):
-                delay = 2000
+                delay = 600000
                 
                 # changes delay if showing the list of topics
                 if is_view_topic:
