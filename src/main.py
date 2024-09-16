@@ -10,16 +10,20 @@ root.title("Topic Reminder")
 root.geometry("480x340")
 root.config(bg=BACKGROUND_COLOR)
 
+# main menu options
 new_topic_image = ImageTk.PhotoImage(Image.open("assets/new-topic-button.png"))
 new_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/new-topic-button-hover.png"))
 view_topic_image = ImageTk.PhotoImage(Image.open("assets/view-topic-button.png"))
 view_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/view-topic-button-hover.png"))
-add_topic_image = ImageTk.PhotoImage(Image.open("assets/add-topic-button.png"))
-add_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/add-topic-button-hover.png"))
-done_edit_image = ImageTk.PhotoImage(Image.open("assets/done-edit-button.png"))
-done_edit_hover_image = ImageTk.PhotoImage(Image.open("assets/done-edit-button-hover.png"))
 start_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
 start_hover_image = ImageTk.PhotoImage(Image.open("assets/start-button-hover.png"))
+# adding new topics
+add_topic_image = ImageTk.PhotoImage(Image.open("assets/add-topic-button.png"))
+add_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/add-topic-button-hover.png"))
+# editing existing topics
+done_edit_image = ImageTk.PhotoImage(Image.open("assets/done-edit-button.png"))
+done_edit_hover_image = ImageTk.PhotoImage(Image.open("assets/done-edit-button-hover.png"))
+# modifying current topic
 done_image = ImageTk.PhotoImage(Image.open("assets/done-button.png"))
 done_hover_image = ImageTk.PhotoImage(Image.open("assets/done-button-hover.png"))
 skip_image = ImageTk.PhotoImage(Image.open("assets/skip-button.png"))
@@ -33,6 +37,9 @@ image_dict = {
     add_topic_image: add_topic_hover_image,
     done_edit_image: done_edit_hover_image,
     start_image: start_hover_image,
+    done_image: done_hover_image,
+    skip_image: skip_hover_image,
+    edit_image: edit_hover_image,
 }
 
 current_reminder_list = []
@@ -179,24 +186,24 @@ class App:
             reminder_frame.option_frame.done_button = Util.create_button(reminder_frame.option_frame)
             reminder_frame.option_frame.done_button.config(image=done_image,
                                               command=lambda: modify_json_file(reminder_label, is_delete=True, is_edit=False))
-            reminder_frame.option_frame.done_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "done_button", True,))
-            reminder_frame.option_frame.done_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "done_button", False))
+            reminder_frame.option_frame.done_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, reminder_frame.option_frame.done_button, done_image, True))
+            reminder_frame.option_frame.done_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, reminder_frame.option_frame.done_button, done_image, False))
             
         # creates "skip" button
         if not hasattr(reminder_frame.option_frame, "skip_button"):
             reminder_frame.option_frame.skip_button = Util.create_button(reminder_frame.option_frame)
             reminder_frame.option_frame.skip_button.config(image=skip_image,
                                               command=lambda: modify_json_file(reminder_label, is_delete=False, is_edit=False))
-            reminder_frame.option_frame.skip_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "skip_button", True))
-            reminder_frame.option_frame.skip_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "skip_button", False))
+            reminder_frame.option_frame.skip_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, reminder_frame.option_frame.skip_button, skip_image, True))
+            reminder_frame.option_frame.skip_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, reminder_frame.option_frame.skip_button, skip_image, False))
             
         # creates "edit" button
         if not hasattr(reminder_frame.option_frame, "edit_button"):
             reminder_frame.option_frame.edit_button = Util.create_button(reminder_frame.option_frame)
             reminder_frame.option_frame.edit_button.config(image=edit_image,
                                               command=lambda: modify_json_file(reminder_label, is_delete=False, is_edit=True))
-            reminder_frame.option_frame.edit_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "edit_button", True))
-            reminder_frame.option_frame.edit_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "edit_button", False))
+            reminder_frame.option_frame.edit_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, reminder_frame.option_frame.edit_button, edit_image, True))
+            reminder_frame.option_frame.edit_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, reminder_frame.option_frame.edit_button, edit_image, False))
 
         # checks if cursor is hovering over frame
         if is_active:
@@ -206,22 +213,6 @@ class App:
             reminder_frame.option_frame.pack()
         else:
             reminder_frame.option_frame.pack_forget()
-        
-        # toggles button-hover effect
-        def toggle_hover_effect(e,
-                                button: str,
-                                is_hover: bool) -> None:
-            if is_hover:
-                if button == "done_button":
-                    reminder_frame.option_frame.done_button.config(image=done_hover_image)
-                elif button == "skip_button":
-                    reminder_frame.option_frame.skip_button.config(image=skip_hover_image)
-                elif button == "edit_button":
-                    reminder_frame.option_frame.edit_button.config (image=edit_hover_image)
-            else:
-                reminder_frame.option_frame.done_button.config(image=done_image)
-                reminder_frame.option_frame.skip_button.config(image=skip_image)
-                reminder_frame.option_frame.edit_button.config(image=edit_image)
         
         def modify_json_file(reminder_label,
                              is_delete: bool,
@@ -246,7 +237,8 @@ class App:
                     
                 with open("../data/topic.json", "w") as file:
                     json.dump(topic_list, file, indent=4)
-                    
+    
+    # toggles button-hover effect 
     def toggle_hover_effect(e,
                             button,
                             image_type,
