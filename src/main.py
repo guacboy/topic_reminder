@@ -10,15 +10,30 @@ root.title("Topic Reminder")
 root.geometry("480x340")
 root.config(bg=BACKGROUND_COLOR)
 
-add_topic_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
-add_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
+new_topic_image = ImageTk.PhotoImage(Image.open("assets/new-topic-button.png"))
+new_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/new-topic-button-hover.png"))
+view_topic_image = ImageTk.PhotoImage(Image.open("assets/view-topic-button.png"))
+view_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/view-topic-button-hover.png"))
+add_topic_image = ImageTk.PhotoImage(Image.open("assets/add-topic-button.png"))
+add_topic_hover_image = ImageTk.PhotoImage(Image.open("assets/add-topic-button-hover.png"))
+done_edit_image = ImageTk.PhotoImage(Image.open("assets/done-edit-button.png"))
+done_edit_hover_image = ImageTk.PhotoImage(Image.open("assets/done-edit-button-hover.png"))
 start_image = ImageTk.PhotoImage(Image.open("assets/start-button.png"))
+start_hover_image = ImageTk.PhotoImage(Image.open("assets/start-button-hover.png"))
 done_image = ImageTk.PhotoImage(Image.open("assets/done-button.png"))
 done_hover_image = ImageTk.PhotoImage(Image.open("assets/done-button-hover.png"))
 skip_image = ImageTk.PhotoImage(Image.open("assets/skip-button.png"))
 skip_hover_image = ImageTk.PhotoImage(Image.open("assets/skip-button-hover.png"))
-edit_image = ImageTk.PhotoImage(Image.open("assets/skip-button.png"))
-edit_hover_image = ImageTk.PhotoImage(Image.open("assets/skip-button-hover.png"))
+edit_image = ImageTk.PhotoImage(Image.open("assets/edit-button.png"))
+edit_hover_image = ImageTk.PhotoImage(Image.open("assets/edit-button-hover.png"))
+
+image_dict = {
+    new_topic_image: new_topic_hover_image,
+    view_topic_image: view_topic_hover_image,
+    add_topic_image: add_topic_hover_image,
+    done_edit_image: done_edit_hover_image,
+    start_image: start_hover_image,
+}
 
 current_reminder_list = []
     
@@ -39,17 +54,22 @@ class App:
         add_topic_button = Util.create_button(topic_window)
         add_topic_button.config(image=add_topic_image,
                                 command=lambda: App.add_topic(topic_entry))
+        add_topic_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, add_topic_button, add_topic_image, True))
+        add_topic_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, add_topic_button, add_topic_image, False))
         add_topic_button.pack()
         
         # differentiates between standard topic window vs edit window
         if reminder_label != None:
             topic_entry.insert(END, reminder_label.cget("text"))
             
-            add_topic_button.config(image=add_topic_image,
+            done_edit_button = add_topic_button
+            done_edit_button.config(image=done_edit_image,
                                     command=lambda: App.edit_topic(reminder_frame,
                                                                    reminder_label,
                                                                    topic_entry,
                                                                    is_edit))
+            done_edit_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, done_edit_button, done_edit_image, True))
+            done_edit_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, done_edit_button, done_edit_image, False))
     
     # adds the inserted topic into topic.json
     def add_topic(topic_entry) -> None:
@@ -85,7 +105,7 @@ class App:
         topic_window.destroy()
     
     # window for displaying the reminders
-    def create_reminder_window(is_topic_list: bool) -> None:
+    def create_reminder_window(is_view_topic: bool) -> None:
         global reminder_window
         
         reminder_window = Toplevel()
@@ -94,16 +114,16 @@ class App:
         
         # ensures the current topics displayed is reset
         current_reminder_list.clear()
-        App.display_reminder(is_topic_list)
+        App.display_reminder(is_view_topic)
         
-    def display_reminder(is_topic_list: bool) -> None:
+    def display_reminder(is_view_topic: bool) -> None:
         if reminder_window.winfo_exists():
             with open("../data/topic.json", "r") as file:
                 topic_list = json.load(file)
             
             while True:
                 # checks to display out of order (general) or in order (topic list)
-                if is_topic_list:
+                if is_view_topic:
                     # probably O(n!) but it works
                     for topic in topic_list["topic"]:
                         reminder = topic
@@ -137,10 +157,10 @@ class App:
                 delay = 2000
                 
                 # changes delay if showing the list of topics
-                if is_topic_list:
+                if is_view_topic:
                     delay = 0
                 
-                root.after(delay, App.display_reminder, is_topic_list)
+                root.after(delay, App.display_reminder, is_view_topic)
     
     # toggles done/skip buttons below a reminder
     def toggle_reminder_option_button(e,
@@ -173,7 +193,7 @@ class App:
         # creates "edit" button
         if not hasattr(reminder_frame.option_frame, "edit_button"):
             reminder_frame.option_frame.edit_button = Util.create_button(reminder_frame.option_frame)
-            reminder_frame.option_frame.edit_button.config(image=skip_image,
+            reminder_frame.option_frame.edit_button.config(image=edit_image,
                                               command=lambda: modify_json_file(reminder_label, is_delete=False, is_edit=True))
             reminder_frame.option_frame.edit_button.bind("<Enter>", lambda e: toggle_hover_effect(e, "edit_button", True))
             reminder_frame.option_frame.edit_button.bind("<Leave>", lambda e: toggle_hover_effect(e, "edit_button", False))
@@ -197,11 +217,11 @@ class App:
                 elif button == "skip_button":
                     reminder_frame.option_frame.skip_button.config(image=skip_hover_image)
                 elif button == "edit_button":
-                    reminder_frame.option_frame.edit_button.config (image=skip_hover_image)
+                    reminder_frame.option_frame.edit_button.config (image=edit_hover_image)
             else:
                 reminder_frame.option_frame.done_button.config(image=done_image)
                 reminder_frame.option_frame.skip_button.config(image=skip_image)
-                reminder_frame.option_frame.edit_button.config(image=skip_image)
+                reminder_frame.option_frame.edit_button.config(image=edit_image)
         
         def modify_json_file(reminder_label,
                              is_delete: bool,
@@ -226,6 +246,15 @@ class App:
                     
                 with open("../data/topic.json", "w") as file:
                     json.dump(topic_list, file, indent=4)
+                    
+    def toggle_hover_effect(e,
+                            button,
+                            image_type,
+                            is_hover: bool) -> None:
+            if is_hover:
+                button.config(image=image_dict[image_type])
+            else:
+                button.config(image=image_type)
 
 # title
 title_label = Util.create_label(root)
@@ -233,22 +262,28 @@ title_label.config(text="Topic Reminder",
                    font=(FONT_TYPE, 25))
 title_label.pack(pady=(20, 0))
 
-# creates the topic button where you can insert your topics
-topic_button = Util.create_button(root)
-topic_button.config(image=add_topic_image,
-                    command=lambda: App.create_topic_window(None))
-topic_button.pack(pady=(50, 0))
+# creates the new topic button where you can insert your topics
+new_topic_button = Util.create_button(root)
+new_topic_button.config(image=new_topic_image,
+                        command=lambda: App.create_topic_window(None, None, False))
+new_topic_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, new_topic_button, new_topic_image, True))
+new_topic_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, new_topic_button, new_topic_image, False))
+new_topic_button.pack(pady=(50, 0))
 
-# creates the topic list button where you can view your topics
-topic_button = Util.create_button(root)
-topic_button.config(image=add_topic_image,
-                    command=lambda: App.create_reminder_window(is_topic_list=True))
-topic_button.pack(pady=(10, 0))
+# creates the view topic button where you can view your topics
+view_topic_button = Util.create_button(root)
+view_topic_button.config(image=view_topic_image,
+                         command=lambda: App.create_reminder_window(is_view_topic=True))
+view_topic_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, view_topic_button, view_topic_image, True))
+view_topic_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, view_topic_button, view_topic_image, False))
+view_topic_button.pack(pady=(10, 0))
 
 # creates the start button
 start_button = Util.create_button(root)
-start_button.config(image=add_topic_image,
-                    command=lambda: App.create_reminder_window(is_topic_list=False))
+start_button.config(image=start_image,
+                    command=lambda: App.create_reminder_window(is_view_topic=False))
+start_button.bind("<Enter>", lambda e: App.toggle_hover_effect(e, start_button, start_image, True))
+start_button.bind("<Leave>", lambda e: App.toggle_hover_effect(e, start_button, start_image, False))
 start_button.pack(side=BOTTOM,
                   pady=(0, 20))
 
