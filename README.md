@@ -56,4 +56,4 @@ and voilà! Project should now open.
 <h2>
   License
 </h2>
-This project is distributed under the terms of the MIT license, as described in the <a href="https://github.com/guacboy/fake_chatters/blob/main/LICENSE">LICENSE.md</a> file.
+This project is distributed under the terms of the MIT license, as described in the <a href="https://github.com/guacboy/topic_reminder/blob/main/LICENSE">LICENSE.md</a> file.
