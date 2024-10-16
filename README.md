@@ -1,6 +1,7 @@
 <h1>
   Topic Reminder
 </h1>
+This program allows users to create a window populated with self-input topics, serving as conversation prompts for streaming. By organizing key discussion points, it helps streamers maintain focus and engage effectively with their audience.
 <h2>
   Setting up the Project File
 </h2>
