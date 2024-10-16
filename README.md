@@ -28,6 +28,7 @@ This program allows users to create a window populated with self-input topics, s
     </li>
   </ul>
 </ul>
+<h3>
   Opening the Project File
 </h3>
 <li>
